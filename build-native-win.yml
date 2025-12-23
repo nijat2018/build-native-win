@@ -1,0 +1,51 @@
+name: build-native-win-only
+
+on:
+  workflow_dispatch:
+
+jobs:
+  native-win:
+    runs-on: windows-latest
+
+    env:
+      NODE_VERSION: "16.14.2"
+      ELECTRON_VERSION: "15.5.7"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install deps
+        run: |
+          yarn install --frozen-lockfile
+
+      # 对 Electron 15.5.7 重编译原生模块（逐个模块）
+      - name: Rebuild 5 native modules for Electron (from source)
+        shell: pwsh
+        run: |
+          $mods = @("drivelist","native-keymap","keytar","node-pty","nsfw")
+          foreach ($m in $mods) {
+            Write-Host "==== rebuilding $m ===="
+            npm rebuild $m --build-from-source -- `
+              --runtime=electron `
+              --target=$env:ELECTRON_VERSION `
+              --dist-url=https://electronjs.org/headers
+          }
+
+      # 打包成 artifact：把这5个模块的整个目录上传（最省事）
+      # 里面会包含 build/Release/*.node 等产物
+      - name: Upload compiled native modules (win)
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-modules-win-electron-15.5.7
+          path: |
+            node_modules/drivelist/**
+            node_modules/native-keymap/**
+            node_modules/keytar/**
+            node_modules/node-pty/**
+            node_modules/nsfw/**
+          if-no-files-found: error
