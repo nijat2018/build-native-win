@@ -37,18 +37,6 @@ jobs:
             Write-Host "==== rebuilding $m ===="
             npm rebuild $m --build-from-source
           }
-      - name: Debug: where are native modules?
-        shell: pwsh
-        run: |
-          dir
-          if (Test-Path node_modules) { dir node_modules | select -First 30 }
-          yarn -v
-          if (Test-Path .yarnrc.yml) { Get-Content .yarnrc.yml }
-          yarn why drivelist
-          yarn why native-keymap
-          yarn why keytar
-          yarn why node-pty
-          yarn why nsfw
 
 
       # 打包成 artifact：把这5个模块的整个目录上传（最省事）
