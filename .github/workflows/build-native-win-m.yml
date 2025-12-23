@@ -33,6 +33,16 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
+      - name: Install Windows 11 SDK
+        shell: pwsh
+        run: |
+          choco install -y windows-sdk-11-version-22h2-all
+
+      - name: Verify Windows SDK
+        shell: pwsh
+        run: |
+          Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Lib" -ErrorAction SilentlyContinue | Select-Object -First 5
+
       # 对 Electron 15.5.7 重编译原生模块（逐个模块）
       - name: Rebuild 5 native modules for Electron (from source)
         shell: pwsh
