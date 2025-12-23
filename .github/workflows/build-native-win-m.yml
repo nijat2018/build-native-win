@@ -33,10 +33,14 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Install Windows 11 SDK
+      - name: Install VS Build Tools + Windows SDK (for node-gyp)
         shell: pwsh
         run: |
-          choco install -y windows-sdk-11-version-22h2-all
+          choco install -y visualstudio2022buildtools --package-parameters `
+            "--add Microsoft.VisualStudio.Workload.VCTools `
+            --add Microsoft.VisualStudio.Component.Windows10SDK.19041 `
+            --includeRecommended --includeOptional"
+
 
       - name: Verify Windows SDK
         shell: pwsh
