@@ -32,11 +32,15 @@ jobs:
           npm_config_disturl: https://electronjs.org/headers
           npm_config_build_from_source: "true"
         run: |
-          $mods = @("drivelist","native-keymap","keytar","node-pty","nsfw")
-          foreach ($m in $mods) {
-            Write-Host "==== rebuilding $m ===="
-            npm rebuild $m --build-from-source
-          }
+          yarn add drivelist@9.2.4 --verbose
+
+          yarn add native-keymap@2.5.0 --verbose
+
+          yarn add keytar@7.2.0 --verbose
+
+          yarn add node-pty@0.11.0-beta17 --verbose
+
+          yarn add nsfw@2.2.4 --verbose
 
 
       # 打包成 artifact：把这5个模块的整个目录上传（最省事）
