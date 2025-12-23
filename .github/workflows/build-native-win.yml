@@ -26,15 +26,18 @@ jobs:
       # 对 Electron 15.5.7 重编译原生模块（逐个模块）
       - name: Rebuild 5 native modules for Electron (from source)
         shell: pwsh
+        env:
+          npm_config_runtime: electron
+          npm_config_target: 15.5.7
+          npm_config_disturl: https://electronjs.org/headers
+          npm_config_build_from_source: "true"
         run: |
           $mods = @("drivelist","native-keymap","keytar","node-pty","nsfw")
           foreach ($m in $mods) {
             Write-Host "==== rebuilding $m ===="
-            npm rebuild $m --build-from-source -- `
-              --runtime=electron `
-              --target=$env:ELECTRON_VERSION `
-              --dist-url=https://electronjs.org/headers
+            npm rebuild $m --build-from-source
           }
+
 
       # 打包成 artifact：把这5个模块的整个目录上传（最省事）
       # 里面会包含 build/Release/*.node 等产物
