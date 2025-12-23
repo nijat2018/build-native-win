@@ -45,7 +45,7 @@ jobs:
 
       # 对 Electron 15.5.7 重编译原生模块（逐个模块）
       - name: Rebuild 5 native modules for Electron (from source)
-        shell: pwsh
+        shell: cmd
         env:
           npm_config_runtime: electron
           npm_config_target: 15.5.7
@@ -53,7 +53,7 @@ jobs:
           npm_config_build_from_source: "true"
           GYP_MSVS_VERSION: "2022"
         run: |
-          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
           call "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat"
 
           yarn add drivelist@9.2.4 --verbose
