@@ -53,6 +53,9 @@ jobs:
           npm_config_build_from_source: "true"
           GYP_MSVS_VERSION: "2022"
         run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
+          call "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat"
+
           yarn add drivelist@9.2.4 --verbose
 
           yarn add native-keymap@2.5.0 --verbose
