@@ -37,6 +37,8 @@ jobs:
             Write-Host "==== rebuilding $m ===="
             npm rebuild $m --build-from-source
           }
+
+
       - name: Debug: where are native modules?
         shell: pwsh
         run: |
