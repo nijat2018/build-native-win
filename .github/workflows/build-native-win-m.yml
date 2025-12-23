@@ -23,6 +23,13 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
+      - name: Install Visual Studio Build Tools (C++)
+        shell: pwsh
+        run: |
+          choco install -y visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional"
+          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Workload.VCTools -property installationPath
+
+
       # 对 Electron 15.5.7 重编译原生模块（逐个模块）
       - name: Rebuild 5 native modules for Electron (from source)
         shell: pwsh
@@ -38,19 +45,6 @@ jobs:
             npm rebuild $m --build-from-source
           }
 
-
-      - name: Debug: where are native modules?
-        shell: pwsh
-        run: |
-          dir
-          if (Test-Path node_modules) { dir node_modules | select -First 30 }
-          yarn -v
-          if (Test-Path .yarnrc.yml) { Get-Content .yarnrc.yml }
-          yarn why drivelist
-          yarn why native-keymap
-          yarn why keytar
-          yarn why node-pty
-          yarn why nsfw
 
 
       # 打包成 artifact：把这5个模块的整个目录上传（最省事）
