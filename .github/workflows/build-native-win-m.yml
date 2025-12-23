@@ -19,16 +19,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Ensure MSVC build tools available
+        shell: pwsh
+        run: |
+          # 显示 runner 上已安装的 VS（用于排查）
+          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -all -prerelease -products * -format json
+
+
       - name: Install deps
         run: |
           yarn install --frozen-lockfile
-
-      - name: Install Visual Studio Build Tools (C++)
-        shell: pwsh
-        run: |
-          choco install -y visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional"
-          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Workload.VCTools -property installationPath
-
 
       # 对 Electron 15.5.7 重编译原生模块（逐个模块）
       - name: Rebuild 5 native modules for Electron (from source)
@@ -38,12 +41,17 @@ jobs:
           npm_config_target: 15.5.7
           npm_config_disturl: https://electronjs.org/headers
           npm_config_build_from_source: "true"
+          GYP_MSVS_VERSION: "2022"
         run: |
-          $mods = @("drivelist","native-keymap","keytar","node-pty","nsfw")
-          foreach ($m in $mods) {
-            Write-Host "==== rebuilding $m ===="
-            npm rebuild $m --build-from-source
-          }
+          yarn add drivelist@9.2.4 --verbose
+
+          yarn add native-keymap@2.5.0 --verbose
+
+          yarn add keytar@7.2.0 --verbose
+
+          yarn add node-pty@0.11.0-beta17 --verbose
+
+          yarn add nsfw@2.2.4 --verbose
 
 
 
